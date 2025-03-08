@@ -1,0 +1,115 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOI480XhDawnZrSwFtk1dsJ",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/karmveer049/cancer-prediction/blob/main/cancer_prediction\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Import necessary libraries\n",
+        "import numpy as np\n",
+        "import joblib\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "\n",
+        "# Load the trained model and scaler\n",
+        "model = joblib.load(\"/content/cancer_model.pkl\")  # Ensure you upload this file\n",
+        "scaler = joblib.load(\"/content/scaler.pkl\")  # Ensure you upload this file\n",
+        "\n",
+        "# Feature names (same as in the training data)\n",
+        "feature_names = [\n",
+        "    \"radius_mean\", \"texture_mean\", \"perimeter_mean\", \"area_mean\",\n",
+        "    \"smoothness_mean\", \"compactness_mean\", \"concavity_mean\", \"concave points_mean\",\n",
+        "    \"symmetry_mean\", \"fractal_dimension_mean\", \"radius_se\", \"texture_se\",\n",
+        "    \"perimeter_se\", \"area_se\", \"smoothness_se\", \"compactness_se\", \"concavity_se\",\n",
+        "    \"concave points_se\", \"symmetry_se\", \"fractal_dimension_se\", \"radius_worst\",\n",
+        "    \"texture_worst\", \"perimeter_worst\", \"area_worst\", \"smoothness_worst\",\n",
+        "    \"compactness_worst\", \"concavity_worst\", \"concave points_worst\",\n",
+        "    \"symmetry_worst\", \"fractal_dimension_worst\"\n",
+        "]\n",
+        "\n",
+        "# Function to take user input in a single row\n",
+        "def predict_cancer():\n",
+        "    print(\"\\nEnter patient data as **comma-separated numeric values**:\")\n",
+        "\n",
+        "    while True:\n",
+        "        try:\n",
+        "            # Take input as a single comma-separated string\n",
+        "            input_string = input(\"Enter 30 feature values: \")\n",
+        "\n",
+        "            # Convert input string to a list of floats\n",
+        "            input_data = list(map(float, input_string.split(\",\")))\n",
+        "\n",
+        "            # Validate that exactly 30 values are provided\n",
+        "            if len(input_data) != 30:\n",
+        "                print(\"❌ Error: Please enter exactly 30 numeric values.\")\n",
+        "                continue  # Retry input\n",
+        "\n",
+        "            break  # Exit loop if input is valid\n",
+        "        except ValueError:\n",
+        "            print(\"❌ Invalid input! Please enter numeric values separated by commas.\")\n",
+        "\n",
+        "    # Convert to NumPy array and reshape for prediction\n",
+        "    input_array = np.array(input_data).reshape(1, -1)\n",
+        "\n",
+        "    # Standardize input using the trained scaler\n",
+        "    input_array_scaled = scaler.transform(input_array)\n",
+        "\n",
+        "    # Make prediction\n",
+        "    prediction = model.predict(input_array_scaled)[0]\n",
+        "\n",
+        "    # Display result\n",
+        "    if prediction == 1:\n",
+        "        print(\"\\n🔴 The model predicts: The person **HAS CANCER (Malignant)**\")\n",
+        "    else:\n",
+        "        print(\"\\n🟢 The model predicts: The person **DOES NOT HAVE CANCER (Benign)**\")\n",
+        "\n",
+        "# Run prediction function\n",
+        "predict_cancer()\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "e1t4BkEDN0TO",
+        "outputId": "57939db0-27a6-4d09-c4fe-6b6efcdd396a"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Enter patient data as **comma-separated numeric values**:\n",
+            "Enter 30 feature values: 9.173,13.86,59.2,260.9,0.07721,0.08751,0.05988,0.0218,0.2341,0.06963,0.4098,2.265,2.608,23.52,0.008738,0.03938,0.04312,0.0156,0.04192,0.005822,10.01,19.23,65.59,310.1,0.09836,0.1678,0.1397,0.05087,0.3282,0.0849\n",
+            "\n",
+            "🟢 The model predicts: The person **DOES NOT HAVE CANCER (Benign)**\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
